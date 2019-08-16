@@ -1,6 +1,8 @@
 const { ApolloServer, gql } = require("apollo-server");
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://', {useNewUrlParser: true});
+const User = require('./schemas/User');
+
+mongoose.connect('mongodb://35.222.204.58:27017/jam', {useNewUrlParser: true});
 
 
 // Construct a schema, using GraphQL schema language
@@ -21,6 +23,12 @@ const typeDefs = gql`
     deleteUser(username: String, password: String): Boolean
   }
 
+  type User {
+    name: Name
+    username: String
+    email: String
+    xp:
+  }
 `;
 
 // Provide resolver functions for your schema fields
@@ -29,15 +37,23 @@ const resolvers = {
     hello: (root, args, context) => "Hello world!",
   },
   Mutation: {
-    login: (root, {username, password}, ctx) => {
-        // check DB
-        // generate jwt
-        // return jwt
+    login: async (root, {username, password}, ctx) => {
+        let attemptedUser = await User.findOne({username, password}, 'name username email xp coins base');
+
     },
-    register: (root, {username, password}, ctx) => {
-        // create user in DB
+    register: async (root, {first, last, username, password, email}, ctx) => {
+        let newUser = new User(
+          {
+            name: { first, last },
+            username,
+            password,
+            email,
+          }
+        );
+        await newUser.save();
         // generate JWT
         // return JWT
+        return "jwt";
     },
     // delete
   },
