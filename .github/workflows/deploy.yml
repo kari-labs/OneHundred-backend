@@ -1,0 +1,30 @@
+name: Deploy
+
+on: 
+  push:
+    branches:
+      - master
+
+jobs:
+
+  build:
+ 
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: GCP Authenticate
+        uses: actions/gcloud/auth@master
+        with:
+          GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
+      
+      - name: GCP Build Container
+        needs: GCP Authenticate
+        uses: actions/gcloud/cli@master
+        args: builds submit --tag gcr.io/second-scion-236722/hundred-game-backend
+        
+      - name: GCP Deploy Revision
+        needs: GCP Build Container
+        uses: actions/gcloud/cli@master
+        args: beta run deploy --image gcr.io/second-scion-236722/hundred-game-backend
+        
+        
