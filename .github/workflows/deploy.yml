@@ -16,7 +16,7 @@ jobs:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
   build:
     runs-on: ubuntu-latest
-    needs: GCP Authenticate
+    needs: auth
     steps:
       - name: GCP Build Container
         with:
@@ -24,7 +24,7 @@ jobs:
         uses: actions/gcloud/cli@master
   deploy:
     runs-on: ubuntu-latest
-    needs: GCP Build Container
+    needs: build
     steps:
       - name: GCP Deploy Revision
         with:
