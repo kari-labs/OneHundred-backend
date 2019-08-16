@@ -1,9 +1,11 @@
 const { ApolloServer, gql } = require("apollo-server");
+const bcrypt = require("bcrypt");
 const mongoose = require('mongoose');
 const User = require('./schemas/User');
 
-mongoose.connect('mongodb://35.222.204.58:27017/jam', {useNewUrlParser: true});
+mongoose.connect('mongodb://35.222.204.58:27017/jam', { useNewUrlParser: true });
 
+const saltRounds = 10;
 
 // Construct a schema, using GraphQL schema language
 const typeDefs = gql`
@@ -47,20 +49,22 @@ const resolvers = {
     login: async (root, {username, password}, ctx) => {
         let attemptedUser = await User.findOne({username, password}, 'name username email xp coins base');
         return attemptedUser;
+
     },
-    register: async (root, {first, last, username, password, email}, ctx) => {
-        let newUser = new User(
-          {
-            name: { first, last },
-            username,
-            password,
-            email,
-          }
-        );
-        await newUser.save();
-        // generate JWT
-        // return JWT
-        return "jwt";
+    register: async (root, { first, last, username, password, email }, ctx) => {
+      let hash = await bcrypt.hash(password, saltRounds);
+      let newUser = new User(
+        {
+          name: { first, last },
+          username,
+          hash,
+          email,
+        }
+      );
+      await newUser.save();
+      // generate JWT
+      // return JWT
+      return "jwt";
     },
     // delete
   },
