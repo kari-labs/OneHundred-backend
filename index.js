@@ -14,7 +14,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    login(username: String, password: String): String
+    login(username: String, password: String): User
     register(
         first:String, 
         last: String, 
@@ -29,7 +29,14 @@ const typeDefs = gql`
     name: Name
     username: String
     email: String
-    xp:
+    xp: Float
+    coins: Int
+    base: String
+  }
+
+  type Name {
+    first: String
+    last: String
   }
 `;
 
@@ -39,8 +46,9 @@ const resolvers = {
     hello: (root, args, context) => "Hello world!",
   },
   Mutation: {
-    login: async (root, { username, password }, ctx) => {
-      let attemptedUser = await User.findOne({ username, password }, 'name username email xp coins base');
+    login: async (root, {username, password}, ctx) => {
+        let attemptedUser = await User.findOne({username, password}, 'name username email xp coins base');
+        return attemptedUser;
 
     },
     register: async (root, { first, last, username, password, email }, ctx) => {
