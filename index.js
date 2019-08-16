@@ -46,9 +46,9 @@ const resolvers = {
     hello: (root, args, context) => "Hello world!",
   },
   Mutation: {
-    login: async (root, {username, password}, ctx) => {
-        let attemptedUser = await User.findOne({username, password}, 'name username email xp coins base');
-        return attemptedUser;
+    login: async (root, { username, password }, ctx) => {
+      let attemptedUser = await User.findOne({ username, password }, 'name username email xp coins base');
+      return attemptedUser;
 
     },
     register: async (root, { first, last, username, password, email }, ctx) => {
@@ -57,7 +57,7 @@ const resolvers = {
         {
           name: { first, last },
           username,
-          hash,
+          password: hash,
           email,
         }
       );
