@@ -16,16 +16,16 @@ jobs:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
   build:
     runs-on: ubuntu-latest
+    needs: GCP Authenticate
     steps:
       - name: GCP Build Container
-        needs: GCP Authenticate
         uses: actions/gcloud/cli@master
         args: builds submit --tag gcr.io/second-scion-236722/hundred-game-backend
   deploy:
     runs-on: ubuntu-latest
+    needs: GCP Build Container
     steps:
       - name: GCP Deploy Revision
-        needs: GCP Build Container
         uses: actions/gcloud/cli@master
         args: beta run deploy --image gcr.io/second-scion-236722/hundred-game-backend
         
