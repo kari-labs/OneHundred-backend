@@ -30,6 +30,9 @@ jobs:
       - checkout
       - run: |
           echo $GOOGLE_AUTH | base64 --decode > ${HOME}/worker.json
+          curl https://sdk.cloud.google.com | bash
+          exec -l $SHELL
+          gcloud init --disable-prompts --install-dir=${HOME}
           sudo gcloud --quiet components update
           gcloud auth activate-service-account --key-file=${HOME}/worker.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
