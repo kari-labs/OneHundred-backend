@@ -37,9 +37,9 @@ jobs:
 
 workflows:
   version: 2
-  workflow:
+  build_test_and_deploy:
     jobs:
       - build_and_test
       - server_deploy:
-        requires:
-          - build_and_test
+          requires:
+            - build_and_test
