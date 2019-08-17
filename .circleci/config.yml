@@ -29,7 +29,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          echo $GOOGLE_AUTH > ${HOME}/worker.json 
+          echo $GOOGLE_AUTH | base64 --decode > ${HOME}/worker.json 
           gcloud auth activate-service-account --key-file=${HOME}/worker.json
           gcloud --quiet config set project ${GOOGLE_PROJECT_ID}
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
