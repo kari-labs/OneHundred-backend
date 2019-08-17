@@ -54,6 +54,8 @@ const typeDefs = gql`
     createBase(jwt: String!, data: String!, geo: String): Boolean
     updateBase(jwt: String!, data: String, geo: String): Boolean
     deleteBase(jwt: String!): Boolean
+
+    updateGeo(jwt: String, geo: String): Boolean
   }
 
   type User {
@@ -64,6 +66,7 @@ const typeDefs = gql`
     xp: Float
     coins: Int
     base: String
+    geo: String
     _created: String
   }
 
@@ -221,6 +224,13 @@ const resolvers = {
         return base ? true : false;
       }
       else throw "Error: JWT Invalid";
+    },
+    updateGeo: async (root, {jwt: token, geo}, ctx) => {
+      let {_id} = jwt.verify(token, secret);
+      if(_id) {
+        await User.update({_id}, {geo});
+        return true;
+      }else throw "Error: Invalid JWT"
     },
   },
 };
