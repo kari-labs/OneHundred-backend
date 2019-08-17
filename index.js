@@ -88,30 +88,32 @@ const resolvers = {
   Query: {
     hello: (root, args, context) => "Hello world!",
     nameOfTheGame: (root, args, context) => "One Hundred Clash",
-    getCurrentUser: async (root, {jwt: token}, context) => {
+    getCurrentUser: async (root, { jwt: token }, context) => {
       let { _id } = jwt.verify(token, secret);
       let result = await User.findById(_id, SELECT.ALL);
       return result;
     },
-    refreshToken: async (root, {jwt: token}, context) => {
-      let {_id} = jwt.verify(token, secret);
+    refreshToken: async (root, { jwt: token }, context) => {
+      let { _id } = jwt.verify(token, secret);
       let refresh = await User.findById(_id, SELECT.ALL);
       return jwt.sign(refresh.toJSON(), secret);
     },
-    getBase: async (root, {jwt: token}, ctx) => {
-      let {_id: owner} = jwt.verify(token, secret);
-      if(owner) {
-        let { data } = await Base.findOne({owner}, SELECT.BASE.ALL);
+    getBase: async (root, { jwt: token }, ctx) => {
+      let { _id: owner } = jwt.verify(token, secret);
+      if (owner) {
+        let { data } = await Base.findOne({ owner }, SELECT.BASE.ALL);
         return data;
       }
       else throw "Error: JWT Invalid";
     },
-    getUserByID: async (root, {_id}, ctx) => User.findById(_id, SELECT.ALL),
-    getUser: async (root, {first, last, username}, ctx) => User.findOne({ "$or" : [
-      { "name.first": first },
-      { "name.last": last },
-      { username },
-    ] }, SELECT.ALL),
+    getUserByID: async (root, { _id }, ctx) => User.findById(_id, SELECT.ALL),
+    getUser: async (root, { first, last, username }, ctx) => User.findOne({
+      "$or": [
+        { "name.first": first },
+        { "name.last": last },
+        { username },
+      ]
+    }, SELECT.ALL),
     getUsers: async (root, args, ctx) => {
       return User.find({
         "$or": [
@@ -121,35 +123,35 @@ const resolvers = {
         ]
       }, SELECT.ALL)
     },
-    getUserBase: async (root, {_id: owner}, ctx) => Base.findOne({owner}, SELECT.BASE.ALL)
+    getUserBase: async (root, { _id: owner }, ctx) => Base.findOne({ owner }, SELECT.BASE.ALL)
   },
   Mutation: {
-    login: async (root, {username, password}, ctx) => {
-        let attemptedUser = await User.findOne({username}, '_id name username email xp coins base password');
-        let passwordMatch = await bcrypt.compare(password, attemptedUser.password);
-        if (passwordMatch) {
-          delete attemptedUser._doc.password;
-          let token = jwt.sign(attemptedUser._doc, secret);
-          return token;
-        }
-        else throw "Incorrect username or password";
+    login: async (root, { username, password }, ctx) => {
+      let attemptedUser = await User.findOne({ username }, '_id name username email xp coins base password');
+      let passwordMatch = await bcrypt.compare(password, attemptedUser.password);
+      if (passwordMatch) {
+        delete attemptedUser._doc.password;
+        let token = jwt.sign(attemptedUser._doc, secret);
+        return token;
+      }
+      else throw "Incorrect username or password";
     },
     register: async (root, { first, last, username, password, email }, ctx) => {
       let hash = await bcrypt.hash(password, saltRounds);
       let userExists = await User.findOne(
         {
-          "$or" : [
+          "$or": [
             { username },
             { email },
           ]
         },
         'username email'
       );
-      if( !userExists ) {
+      if (!userExists) {
         let usrObj = {
           name: { first, last },
           username,
-          hash,
+          password: hash,
           email,
         };
         let newUser = new User(usrObj);
@@ -159,68 +161,68 @@ const resolvers = {
       }
       else throw "Error: a user with that username or email already exists";
     },
-    addXP: async (root, {jwt: token, amount}, ctx) => {
+    addXP: async (root, { jwt: token, amount }, ctx) => {
       let { username } = jwt.verify(token, secret);
-      if(username) {
-        let update = await User.update( { username }, { $inc: { xp: amount } } );
-        if( update ) return true;
+      if (username) {
+        let update = await User.update({ username }, { $inc: { xp: amount } });
+        if (update) return true;
         else return false;
       }
       else return false;
     },
-    removeXP: async (root, {jwt: token, amount}, ctx) => {
-      let {username} = jwt.verify(token, secret);
-      if(username) {
-        let update = await User.update( { username }, { $inc: {xp: -amount} } );
-        if( update ) return true;
+    removeXP: async (root, { jwt: token, amount }, ctx) => {
+      let { username } = jwt.verify(token, secret);
+      if (username) {
+        let update = await User.update({ username }, { $inc: { xp: -amount } });
+        if (update) return true;
         else return false;
       }
       else return false;
     },
-    addCoins: async (root, {jwt: token, amount}, ctx) => {
-      let {username} = jwt.verify(token, secret);
-      if(username) {
-        let update = await User.update( { username }, { $inc: {coins: amount} } );
-        if( update ) return true;
+    addCoins: async (root, { jwt: token, amount }, ctx) => {
+      let { username } = jwt.verify(token, secret);
+      if (username) {
+        let update = await User.update({ username }, { $inc: { coins: amount } });
+        if (update) return true;
         else return false;
       }
       else throw "Error: JWT Invalid";
     },
-    removeCoins: async (root, {jwt: token, amount}, ctx) => {
-      let {username} = jwt.verify(token, secret);
-      if(username) {
-        let update = await User.update( { username }, { $inc: {coins: -amount} } );
-        if( update ) return true;
+    removeCoins: async (root, { jwt: token, amount }, ctx) => {
+      let { username } = jwt.verify(token, secret);
+      if (username) {
+        let update = await User.update({ username }, { $inc: { coins: -amount } });
+        if (update) return true;
         else return false;
       }
       else throw "Error: JWT Invalid";
     },
-    createBase: async (root, {jwt: token, data, geo}, ctx) => {
-      let {_id} = jwt.verify(token, secret);
-      if(_id) {
+    createBase: async (root, { jwt: token, data, geo }, ctx) => {
+      let { _id } = jwt.verify(token, secret);
+      if (_id) {
         let base = new Base({
           data,
           owner: _id.toString(),
           geo,
         });
         let saving = await base.save();
-        await User.update({_id}, {base: saving._id})
+        await User.update({ _id }, { base: saving._id })
         return true;
       }
       else throw "Error: JWT Invalid";
     },
-    updateBase: async (root, {jwt: token, data, geo}, ctx) => {
-      let {_id: owner} = jwt.verify(token, secret);
-      if(owner) {
-        let base = await Base.update( {owner}, (geo ? {data, geo} : {data}) );
+    updateBase: async (root, { jwt: token, data, geo }, ctx) => {
+      let { _id: owner } = jwt.verify(token, secret);
+      if (owner) {
+        let base = await Base.update({ owner }, (geo ? { data, geo } : { data }));
         return base ? true : false;
       }
       else throw "Error: JWT Invalid";
     },
-    deleteBase: async (root, {jwt: token}, ctx) => {
-      let {_id: owner} = jwt.verify(token, secret);
-      if(owner) {
-        let base = await Base.deleteOne({owner});
+    deleteBase: async (root, { jwt: token }, ctx) => {
+      let { _id: owner } = jwt.verify(token, secret);
+      if (owner) {
+        let base = await Base.deleteOne({ owner });
         return base ? true : false;
       }
       else throw "Error: JWT Invalid";
