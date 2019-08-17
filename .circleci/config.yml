@@ -25,7 +25,8 @@ jobs:
           command: npm test
 
   server_deploy:
-    machine: true
+    docker:
+      - image: mattconway55/hundred-builder:0.0.1 
     steps:
       - checkout
       - run: |
