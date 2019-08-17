@@ -1,0 +1,27 @@
+type Mutation {
+    login(username: String!, password: String!, geo: String): String
+    logout(jwt: String): Boolean
+    register(
+        first: String!,
+        last: String!, 
+        username: String!,
+        password: String!,
+        email: String,
+    ): String
+    deleteUser(username: String, password: String): Boolean
+
+    addXP(jwt: String!, amount: Float!): Boolean
+    removeXP(jwt: String!, amount: Float!): Boolean
+
+    addCoins(jwt: String!, amount: Int!): Boolean
+    removeCoins(jwt: String!, amount: Int!): Boolean
+
+    createBase(jwt: String!, data: String!, geo: String): Boolean
+    updateBase(jwt: String!, data: String, geo: String): Boolean
+    deleteBase(jwt: String!): Boolean
+
+    updateGeo(jwt: String, geo: String): Boolean
+
+    createLog(jwt: String, attacker: String, attackee: String, win: Boolean, duration: Int): Boolean
+    deleteLog(_id: String): Boolean
+}

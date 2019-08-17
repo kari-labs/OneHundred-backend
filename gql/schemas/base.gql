@@ -1,0 +1,6 @@
+type Base {
+    _id: String
+    data: String
+    owner: String
+    geo: String
+}

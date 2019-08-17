@@ -1,0 +1,16 @@
+type Query {
+    hello: String
+    nameOfTheGame: String
+    refreshToken(jwt: String!): String
+
+    getCurrentUser(jwt: String!): User
+    getBase(jwt: String!): String
+    getUserByID(_id: String!): User
+    getUser(first: String, last: String, username: String): User
+    getUsers(first: String, last: String, username: String): [User]!
+    getUserBase(_id: String): Base
+    getNearbyPlayers(jwt: String!): [User]!
+
+    getLogByID(_id: String): Log
+    getLogs(attacker: String, attackee: String, win: Boolean, duration: Int): [Log]!
+}

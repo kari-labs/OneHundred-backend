@@ -1,0 +1,17 @@
+type User {
+    _id: String
+    name: Name
+    username: String
+    email: String
+    xp: Float
+    coins: Int
+    base: String
+    geo: String
+    _created: String
+    lastLogin: String
+}
+
+type Name {
+    first: String
+    last: String
+}
