@@ -27,7 +27,9 @@ module.exports = {
     let passwordMatch = await bcrypt.compare(password, attemptedUser.password);
     if (passwordMatch) {
       delete attemptedUser._doc.password;
-      await User.updateOne({ _id: attemptedUser._id.toString() }, { geo });
+      if (geo) {
+        await User.updateOne({ _id: attemptedUser._id.toString() }, { geo });
+      }
       // let user = await User.findById(attemptedUser._id, SELECT.ALL);
       //attemptedUser.updateTime();
       let token = jwt.sign(attemptedUser.toJSON(), secret);
