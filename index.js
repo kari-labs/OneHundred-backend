@@ -84,7 +84,7 @@ const typeDefs = gql`
 const resolvers = {
   Query: {
     hello: (root, args, context) => "Hello world!",
-    nameOfTheGame: (root, args, context) => "Big Dog",
+    nameOfTheGame: (root, args, context) => "One Hundred Clash",
     getCurrentUser: async (root, { jwt: token }, context) => {
       let { _id } = jwt.verify(token, secret);
       let result = await User.findById(_id, SELECT.ALL);
