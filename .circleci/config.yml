@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  build_and_test:
     docker:
       # specify the version you desire here
       - image: circleci/node:10
@@ -24,7 +24,7 @@ jobs:
           name: Run Tests
           command: npm test
 
-  push-image:
+  server_deploy:
     machine: true
     steps:
       - checkout
@@ -34,3 +34,12 @@ jobs:
           gcloud --quiet config set compute/zone ${GOOGLE_COMPUTE_ZONE}
           gcloud builds submit --tag gcr.io/${GOOGLE_PROJECT_ID}/hundred-game-backend
           gcloud beta run deploy --image gcr.io/${GOOGLE_PROJECT_ID}/hundred-game-backend
+
+workflows:
+  version: 2
+  workflow:
+    jobs:
+      - build_and_test
+      - server_deploy:
+        requires:
+          - build_and_test
