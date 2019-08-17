@@ -64,12 +64,15 @@ module.exports = {
   getUserBase: async (root, { _id: owner }, ctx) => Base.findOne({ owner }, SELECT.BASE.ALL),
   getNearbyPlayers: async (root, { jwt: token }, ctx, info) => {
     let { _id } = jwt.verify(token, secret);
-    return User.find({
-      lastLogin: {
-        "$lt": new Date(),
-        "$gte": new Date(new Date().setMinutes(new Date().getMinutes() - 5))
-      }
+    let currentUser = await User.findById(_id, SELECT.ALL);
+    let all = await User.find({
+      "$and" : [
+        {
+          "$not": { _id }
+        },
+      ],
     }, SELECT.ALL);
+    
   },
   getLogByID: async (root, { _id }, ctx) => Log.findById(_id, SELECT.LOG.BASIC),
   getLogs: async (root, args, ctx) => Log.find(args || {}, SELECT.LOG.ALL),
