@@ -148,7 +148,7 @@ const resolvers = {
         let usrObj = {
           name: { first, last },
           username,
-          hash,
+          password: hash,
           email,
         };
         let newUser = new User(usrObj);
