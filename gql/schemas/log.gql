@@ -1,0 +1,7 @@
+type Log {
+    _id: String
+    attacker: String
+    attackee: String
+    win: Boolean
+    duration: Int
+}
