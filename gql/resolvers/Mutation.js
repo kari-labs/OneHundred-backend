@@ -23,8 +23,6 @@ const SELECT = {
 
 module.exports = {
   login: async (root, { username, password, geo }, ctx, info) => {
-    if(geo == undefined) geo = '';
-
     let attemptedUser = await User.findOne({ username }, '_id name username email xp coins base password lastLogin');
     let passwordMatch = await bcrypt.compare(password, attemptedUser.password);
     if (passwordMatch) {
@@ -36,7 +34,7 @@ module.exports = {
     }
     else throw "Incorrect username or password";
   },
-  logout: async (root, {jwt: token}, ctx) => {
+  logout: async (root, { jwt: token }, ctx) => {
     let user = jwt.verify(token, secret);
     if (user) {
       await User.updateOne({ _id: attemptedUser._id.toString() }, { geo });
@@ -142,9 +140,9 @@ module.exports = {
       return true;
     } else throw "Error: Invalid JWT"
   },
-  createLog: async (root, {jwt: token, attacker, attackee, win, duration}, ctx) => {
+  createLog: async (root, { jwt: token, attacker, attackee, win, duration }, ctx) => {
     let user = jwt.verify(token, secret);
-    if(user) {
+    if (user) {
       let log = new Log({
         attacker,
         attackee,
