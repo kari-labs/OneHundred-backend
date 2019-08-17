@@ -17,11 +17,11 @@ const userSchema = new mongoose.Schema({
         default: 0,
     },
     base: mongoose.Types.ObjectId,
-    created: {
-        type: String,
-        default: Date.now().toLocaleString()
-    },
 });
+
+userSchema.virtual('created').get( function () {
+    return this["_created"] = (new Date(this._id.getTimestamp())).toISOString();
+  });
 
 const User = mongoose.model('User', userSchema);
 
