@@ -70,6 +70,7 @@ module.exports = {
     const USER_LAT = 0;
     const USER_LONG = 1;
     const USER_TIME = 2;
+    const MAX_NEAR_DISTANCE = 30;
 
     const { _id } = jwt.verify(token, secret);
     const currentUser = await User.findById(_id, SELECT.ALL);
@@ -89,12 +90,11 @@ module.exports = {
         let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
         let distance = earthRadius * c;
-        if (distance <= 5) {
+        if (distance <= MAX_NEAR_DISTANCE) {
           nearbyPlayers.push(user);
         }
       }
-
-    })
+    });
 
     return nearbyPlayers;
   },
