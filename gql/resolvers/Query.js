@@ -65,14 +65,8 @@ module.exports = {
   getNearbyPlayers: async (root, { jwt: token }, ctx, info) => {
     let { _id } = jwt.verify(token, secret);
     let currentUser = await User.findById(_id, SELECT.ALL);
-    let all = await User.find({
-      "$and" : [
-        {
-          "$not": { _id }
-        },
-      ],
-    }, SELECT.ALL);
-    
+    let all = await User.find( { "$not": { _id } }, SELECT.ALL );
+
   },
   getLogByID: async (root, { _id }, ctx) => Log.findById(_id, SELECT.LOG.BASIC),
   getLogs: async (root, args, ctx) => Log.find(args || {}, SELECT.LOG.ALL),
