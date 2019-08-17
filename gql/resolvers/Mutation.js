@@ -123,8 +123,21 @@ module.exports = {
   updateBase: async (root, { jwt: token, data, geo }, ctx) => {
     let { _id: owner } = jwt.verify(token, secret);
     if (owner) {
-      let base = await Base.updateOne({ owner }, (geo ? { data, geo } : { data }));
-      return base ? true : false;
+      let baseExits = await Base.findOne({ owner });
+      if(baseExits) {
+        let base = await Base.updateOne({ owner }, (geo ? { data, geo } : { data }));
+        return base ? true : false;
+      }else {
+        //create base if doesn't exist
+        let base = new Base({
+          data,
+          owner,
+          geo,
+        });
+        let saving = await base.save();
+        await User.updateOne({ _id }, { base: saving._id })
+        return true;
+      }
     }
     else throw "Error: JWT Invalid";
   },
