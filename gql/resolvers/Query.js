@@ -64,7 +64,7 @@ module.exports = {
   getUserBase: async (root, { _id: owner }, ctx) => Base.findOne({ owner }, SELECT.BASE.ALL),
   getNearbyPlayers: async (root, { jwt: token }, ctx, info) => {
     const toRadians = (num) => {
-      return num / (Math.PI / 180)
+      return num * (Math.PI / 180)
     }
 
     const USER_LAT = 0;
@@ -77,18 +77,26 @@ module.exports = {
     let nearbyPlayers = [];
 
     const earthRadius = 6371e3;
-    const currentUserLatInRadians = toRadians(new Number(currentUser.geo.split("|", 1)[0]));
+    const currentUserLatInRadians = toRadians(Number(currentUser.geo.split("|", 1)[0]));
     allUsers.forEach(user => {
       if (user.geo) {
-        let nearbyUserLatInRadians = toRadians(new Number(user.geo.split("|")[USER_LAT]))
-        let hypo = toRadians((user.geo.split("|")[USER_LONG] - currentUser.geo.split("|")[USER_LONG]))
-        let distance = Math.acos(Math.sin(currentUserLatInRadians) * Math.sin(nearbyUserLatInRadians) + Math.cos(currentUserLatInRadians) * Math.cos(nearbyUserLatInRadians) * Math.cos(hypo)) * earthRadius;
-        console.log(distance);
+        let nearbyUserLatInRadians = toRadians(Number(user.geo.split("|")[USER_LAT]));
+        let summationLat = toRadians((user.geo.split("|")[USER_LAT] - currentUser.geo.split("|")[USER_LAT]));
+        let summationLong = toRadians((user.geo.split("|")[USER_LONG] - currentUser.geo.split("|")[USER_LONG]));
+        let a = Math.sin(summationLat / 2) * Math.sin(summationLat / 2) +
+          Math.cos(currentUserLatInRadians) * Math.cos(nearbyUserLatInRadians) *
+          Math.sin(summationLong / 2) * Math.sin(summationLong / 2);
+        let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        let distance = earthRadius * c;
+        if (distance <= 5) {
+          nearbyPlayers.push(user);
+        }
       }
 
     })
 
-    return allUsers;
+    return nearbyPlayers;
   },
   getLogByID: async (root, { _id }, ctx) => Log.findById(_id, SELECT.LOG.BASIC),
   getLogs: async (root, args, ctx) => Log.find(args || {}, SELECT.LOG.ALL),
