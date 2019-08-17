@@ -10,8 +10,8 @@ const Log = require('../../schemas/Log');
 const secret = "nicoleIsACutie";
 
 const SELECT = {
-  ALL: '_id name username email xp coins base created lastLogin geo',
-  ALL_INSECURE: '_id name username password email xp coins base',
+  ALL: '_id name username email xp coins base created geo lastLogin',
+  ALL_INSECURE: '_id name username password email xp coins base geo',
   BASIC: '_id name username email',
   BASE: {
     ALL: '_id data owner geo',
