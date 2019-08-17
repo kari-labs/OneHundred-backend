@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: GCP Authenticate
         uses: actions/gcloud/auth@master
-        with:
+        env:
           GCLOUD_AUTH: ${{ secrets.GCLOUD_AUTH }}
   build:
     runs-on: ubuntu-latest
