@@ -1,13 +1,14 @@
+require('dotenv').config()
 const jwt = require('jsonwebtoken');
 
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://35.222.204.58:27017/jam', { useNewUrlParser: true });
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@hundredgamecluster-fzhhl.mongodb.net/test?retryWrites=true&w=majority`, { useNewUrlParser: true });
 
 const User = require('../../schemas/User');
 const Base = require('../../schemas/Base');
 const Log = require('../../schemas/Log');
 
-const secret = "nicoleIsACutie";
+const secret = process.env.JWT_SECRET;
 
 const SELECT = {
   ALL: '_id name username email xp coins base created geo lastLogin',
